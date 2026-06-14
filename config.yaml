@@ -1,0 +1,8 @@
+APP_ENV: development
+PORT: ":8080"
+SERVICE: probe
+REGION: asia-south1
+PROJECT_ID: apex-494315
+SPANNER_DATABASE: projects/apex-494315/instances/apex-spanner-instance/databases/apex-database
+SUBSCRIPTION: projects/apex-494315/subscriptions/sub-probe
+DLQ_SUBSCRIPTION: projects/apex-494315/subscriptions/sub-probe-dlq
