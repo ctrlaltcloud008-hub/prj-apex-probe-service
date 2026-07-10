@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/pubsub/v2 v2.0.0
 	cloud.google.com/go/spanner v1.91.0
 	cloud.google.com/go/storage v1.62.3
-	github.com/ctrlaltcloud008-hub/prj-apex-core-modules v1.1.8
+	github.com/ctrlaltcloud008-hub/prj-apex-core-modules v1.1.9
 	github.com/spf13/viper v1.21.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.67.0
 	go.opentelemetry.io/otel v1.43.0

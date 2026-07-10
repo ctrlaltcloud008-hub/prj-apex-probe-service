@@ -47,6 +47,8 @@ github.com/cncf/xds/go v0.0.0-20260202195803-dba9d589def2 h1:aBangftG7EVZoUb69Os
 github.com/cncf/xds/go v0.0.0-20260202195803-dba9d589def2/go.mod h1:qwXFYgsP6T7XnJtbKlf1HP8AjxZZyzxMmc+Lq5GjlU4=
 github.com/ctrlaltcloud008-hub/prj-apex-core-modules v1.1.8 h1:sjTz6mznDQfFSePWn5f46njeOGCRbcrrjapHjMhth5c=
 github.com/ctrlaltcloud008-hub/prj-apex-core-modules v1.1.8/go.mod h1:3EU2HzAAGb9gBBCwwRkT4+P/oR8bRFA7NB34/p0JzPI=
+github.com/ctrlaltcloud008-hub/prj-apex-core-modules v1.1.9 h1:AlpUeoSI7N4YwOr+8GZOyQHLtjcGx3yNHMC/bcpwuTU=
+github.com/ctrlaltcloud008-hub/prj-apex-core-modules v1.1.9/go.mod h1:3EU2HzAAGb9gBBCwwRkT4+P/oR8bRFA7NB34/p0JzPI=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=

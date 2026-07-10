@@ -53,7 +53,6 @@ func NewMessageProcessor(log *logger.Logger, spannerClient *spanner.Client, gcsC
 func (p *MessageProcessor) ProcessMessage(ctx context.Context, region string, payload *event.VideoReceivedPayload) error {
 	videoID := payload.VideoID
 	userID := payload.UserID
-	startedAt := time.Now().UTC()
 
 	ctx, span := otel.Tracer(instrumentationName).Start(ctx,
 		"probe.process_message",
@@ -126,6 +125,7 @@ func (p *MessageProcessor) ProcessMessage(ctx context.Context, region string, pa
 	}
 
 	sourceGCSURI := fmt.Sprintf("gs://%s/%s", payload.Bucket, payload.ObjectPath)
+	transitionedAt := time.Now().UTC()
 
 	span.AddEvent("processing.spanner_transaction")
 	_, err = spannerutils.RunRW(ctx, p.spanner, func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
@@ -183,14 +183,17 @@ func (p *MessageProcessor) ProcessMessage(ctx context.Context, region string, pa
 			return fmt.Errorf("append lifecycle events: %w", err)
 		}
 
-		if err := lifecycle.InsertVideoStageRecord(ctx, tx, lifecycle.StageRecordParams{
-			VideoID:   videoID,
-			Stage:     models.StatusValidated,
-			Attempt:   1,
-			StartedAt: spanner.NullTime{Time: startedAt, Valid: true},
-			Actor:     "probe",
+		if err := lifecycle.TransitionVideoStage(ctx, tx, lifecycle.StageTransitionParams{
+			VideoID:        videoID,
+			FromStage:      models.StatusValidating,
+			FromAttempt:    1,
+			ToStage:        models.StatusValidated,
+			ToAttempt:      1,
+			TransitionedAt: transitionedAt,
+			Outcome:        "SUCCEEDED",
+			Actor:          "probe",
 		}); err != nil {
-			return fmt.Errorf("insert validated stage record: %w", err)
+			return fmt.Errorf("transition validating stage: %w", err)
 		}
 
 		return nil
@@ -258,6 +261,7 @@ func (p *MessageProcessor) probeObject(ctx context.Context, bucket, objectPath s
 // This is best-effort: the caller Acks regardless of whether MarkFailed succeeds.
 func (p *MessageProcessor) MarkFailed(ctx context.Context, payload *event.VideoReceivedPayload, causeErr error) error {
 	videoID := payload.VideoID
+	transitionedAt := time.Now().UTC()
 
 	ctx, span := otel.Tracer(instrumentationName).Start(ctx,
 		"probe.mark_failed",
@@ -293,14 +297,17 @@ func (p *MessageProcessor) MarkFailed(ctx context.Context, payload *event.VideoR
 			return fmt.Errorf("append lifecycle events: %w", err)
 		}
 
-		if err := lifecycle.InsertVideoStageRecord(ctx, tx, lifecycle.StageRecordParams{
-			VideoID: videoID,
-			Stage:   models.StatusFailed,
-			Attempt: 1,
-			Outcome: spanner.NullString{StringVal: "FAILED", Valid: true},
-			Actor:   "probe",
+		if err := lifecycle.TransitionVideoStage(ctx, tx, lifecycle.StageTransitionParams{
+			VideoID:        videoID,
+			FromStage:      models.StatusValidating,
+			FromAttempt:    1,
+			ToStage:        models.StatusFailed,
+			ToAttempt:      1,
+			TransitionedAt: transitionedAt,
+			Outcome:        "FAILED",
+			Actor:          "probe",
 		}); err != nil {
-			return fmt.Errorf("insert failed stage record: %w", err)
+			return fmt.Errorf("transition failed stage: %w", err)
 		}
 
 		return nil
